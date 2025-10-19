@@ -1,5 +1,6 @@
 package main
 
+import "core:time"
 import "core:os"
 import "core:fmt"
 
@@ -13,7 +14,17 @@ main :: proc() {
     
     // Unit testing
     // Cleanup
-    // Calculate time by decode / second
+    when ODIN_DEBUG {
+        start := time.now()
+        
+        defer {
+            end := time.now()
+            duration := time.duration_seconds(time.diff(start, end))
+            
+            fmt.printfln("Current speed is %f instructions decoded/second", cast(f64) app.len / duration)
+        }
+    }
+    
     for ;app.instruction_pointer < app.len; {
         lower_bound := app.instruction_pointer
         upper_bound: u16
@@ -32,7 +43,7 @@ main :: proc() {
 }
 
 decode_instruction :: proc(instruction_bytes: []u8) -> Instruction {
-    instruction := decode_opcode(instruction_bytes[0])
+    instruction := decode_opcode(instruction_bytes[:])
     decode_operand_address(&instruction, instruction_bytes[:])
     build_mnemonic(&instruction)
     

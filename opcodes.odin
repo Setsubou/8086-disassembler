@@ -80,7 +80,7 @@ Instruction :: struct {
 	direction:       bool,
 }
 
-decode_opcode :: proc(input: u8) -> Instruction {
+decode_opcode :: proc(instruction_bytes: []u8) -> Instruction {
 	// Debating whether to use slices or fixed u8, for now we know that an opcode is only a single byte
 	// But it might change in the future as we get deeper
 
@@ -91,13 +91,13 @@ decode_opcode :: proc(input: u8) -> Instruction {
 	// find a match.
 	for i := 0; i < 4; i += 1 {
 		decode_mask := OPCODE_DECODE_MASK
-		masked_input := input & decode_mask[i]
+		masked_input := instruction_bytes[0] & decode_mask[i]
 
 		switch masked_input {
 		case 0b10001000: // MOV R/M To Register
 			{
-				wide := cast(bool)(WIDE_INSTRUCTION_MASK & input)
-				direction := cast(bool)(DIRECTION_MASK & input)
+				wide := cast(bool)(WIDE_INSTRUCTION_MASK & instruction_bytes[0])
+				direction := cast(bool)(DIRECTION_MASK & instruction_bytes[0])
 
 				return Instruction {
 					opcode = .MOV,
@@ -209,8 +209,6 @@ decode_register :: proc(input: u8, wide_flag: bool) -> Register {
 				fmt.println("Invalid register encoding")
 				os.exit(1)
 			}
-
-
 		}
 	}
 }
@@ -218,11 +216,14 @@ decode_register :: proc(input: u8, wide_flag: bool) -> Register {
 build_mnemonic :: proc(instruction: ^Instruction) {
     // This somehow took a lot of processing time
     mnemonic: string
+    opcode := instruction^.opcode
+    register := instruction^.register
+    register_memory := instruction^.register_memory
     
     if instruction^.direction {
-        mnemonic = strings.to_lower(fmt.tprintf("%s %s, %s", instruction^.opcode, instruction^.register, instruction^.register_memory))
+        mnemonic = strings.to_lower(fmt.tprintf("%s %s, %s", opcode, register, register_memory))
     } else {
-        mnemonic = strings.to_lower(fmt.tprintf("%s %s, %s", instruction^.opcode, instruction^.register_memory, instruction^.register))
+        mnemonic = strings.to_lower(fmt.tprintf("%s %s, %s", opcode, register_memory, register))
     }
     
     instruction^.mnemonic = mnemonic
