@@ -1,9 +1,8 @@
 # Introduction
-This is a simple 8086 disassembler made for Casey Muratori's course over at [Computer, Enhance!](https://www.computerenhance.com/)
-
+A simple 8086 disassembler made for Casey Muratori's course over at [Computer, Enhance!](https://www.computerenhance.com/)
 This is made for educational purposes, and probably should not be used for an actual production environment.
 
-This disassembler is made with [Odin](https://odin-lang.org/)
+Made with [Odin](https://odin-lang.org/)
 
 # Building
 Just run this following command with Odin installed
