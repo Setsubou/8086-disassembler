@@ -1,9 +1,15 @@
 package main
 
+import "core:os"
 import "core:fmt"
 
 main :: proc() {
-    app := open_file("asm/listing_38")
+    if len(os.args[1:]) < 1 {
+        fmt.println("You must provide an argument for the file name to be run")
+        os.exit(1)
+    }
+    
+    app := open_file(os.args[1])
     
     // Unit testing
     // Cleanup
@@ -21,13 +27,14 @@ main :: proc() {
         instruction := decode_instruction(app.opcodes[lower_bound:upper_bound])
         app.instruction_pointer += cast(u16) instruction.size
         
-        fmt.println(instruction)
+        fmt.println(instruction.mnemonic)
     }
 }
 
 decode_instruction :: proc(instruction_bytes: []u8) -> Instruction {
     instruction := decode_opcode(instruction_bytes[0])
-    
+    decode_operand_address(&instruction, instruction_bytes[:])
+    build_mnemonic(&instruction)
     
     return instruction
 }

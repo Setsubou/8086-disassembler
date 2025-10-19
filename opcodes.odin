@@ -5,13 +5,19 @@ import "core:fmt"
 import "core:os"
 
 WIDE_INSTRUCTION_MASK :: 0b00000001
+
 REGISTER_MASK :: 0b00111000
+REGISTER_SHIFT_OFFSET :: 3
+
 RM_MASK :: 0b00000111
+
 MODE_MASK :: 0b11000000
 MODE_SHIFT_OFFSET :: 6
-REGISTER_SHIFT_OFFSET :: 3
+
 SIGN_MASK :: 0b00000010
+
 DIRECTION_MASK :: 0b00000010
+DIRECTION_SHIFT_OFFSET :: 1
 
 OPCODE_DECODE_MASK :: [5]u8{0b11111111, 0b11111110, 0b11111100, 0b11111000, 0b11110000}
 
@@ -127,11 +133,11 @@ decode_mode :: proc(input: u8) -> Mode {
 	}
 }
 
-decode_register_memory :: proc(r_m_field: u8, wide: bool, mode: Mode) -> Operand_address {
+decode_register_memory :: proc(rm_field: u8, wide: bool, mode: Mode) -> Operand_address {
 	switch mode {
 	case .REGISTER_MODE:
 		{
-			return decode_register(r_m_field, wide)
+			return decode_register(rm_field, wide)
 		}
 
 	case .DISPLACEMENT_16BIT, .DISPLACEMENT_8BIT, .NO_DISPLACEMENT:
@@ -220,4 +226,23 @@ build_mnemonic :: proc(instruction: ^Instruction) {
     }
     
     instruction^.mnemonic = mnemonic
+}
+
+decode_operand_address :: proc(instruction: ^Instruction, instruction_bytes: []u8) {
+    switch instruction^.addressing_mode {
+        case .RM_TF_R: {            
+            wide_flag := instruction^.wide
+            mode_flag := (instruction_bytes[1] & MODE_MASK) >> MODE_SHIFT_OFFSET
+            register_flag := (instruction_bytes[1] & REGISTER_MASK) >> REGISTER_SHIFT_OFFSET
+            register_memory_flag := instruction_bytes[1] & RM_MASK
+            
+            mode := decode_mode(mode_flag)
+            register := decode_register(register_flag, wide_flag)
+            register_memory := decode_register_memory(register_memory_flag, wide_flag, mode)
+
+            instruction^.mode = mode
+            instruction^.register = register
+            instruction^.register_memory = register_memory
+        }
+    }
 }
