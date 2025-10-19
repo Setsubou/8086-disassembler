@@ -21,7 +21,7 @@ main :: proc() {
             end := time.now()
             duration := time.duration_seconds(time.diff(start, end))
             
-            fmt.printfln("Current speed is %f instructions decoded/second", cast(f64) app.len / duration)
+            fmt.printfln("Managed to decode %f instructions /second", cast(f64) app.len / duration)
         }
     }
     
