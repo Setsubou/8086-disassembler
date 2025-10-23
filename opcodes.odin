@@ -3,6 +3,7 @@ package main
 import "core:strings"
 import "core:fmt"
 import "core:os"
+import "core:testing"
 
 WIDE_INSTRUCTION_MASK :: 0b00000001
 
@@ -66,18 +67,17 @@ Operand_address :: union {
 
 Instruction :: struct {
 	opcode:          Opcode,
-	size:            u8,
-	addressing_mode: Addressing_Mode,
-	register:        Operand_address,
-	register_memory: Operand_address,
-	displacement:    u16,
-	mode:            Mode,
-	mnemonic:        string,
-
 	// Can probably pack these into single bitfield values
 	sign_extension:  bool,
 	wide:            bool,
 	direction:       bool,
+	size:            u8,
+	displacement:    u16,
+	addressing_mode: Addressing_Mode,
+	register:        Register,
+	register_memory: Operand_address,
+	mode:            Mode,
+	mnemonic:        string,
 }
 
 decode_opcode :: proc(instruction_bytes: []u8) -> Instruction {
@@ -94,8 +94,9 @@ decode_opcode :: proc(instruction_bytes: []u8) -> Instruction {
 		masked_input := instruction_bytes[0] & decode_mask[i]
 
 		switch masked_input {
-		case 0b10001000: // MOV R/M To Register
-			{
+		
+		// MOV R/M To/From Register
+		case 0b10001000: {
 				wide := cast(bool)(WIDE_INSTRUCTION_MASK & instruction_bytes[0])
 				direction := cast(bool)(DIRECTION_MASK & instruction_bytes[0])
 
@@ -247,3 +248,40 @@ decode_operand_address :: proc(instruction: ^Instruction, instruction_bytes: []u
         }
     }
 }
+
+decode_instruction :: proc(instruction_bytes: []u8) -> Instruction {
+    instruction := decode_opcode(instruction_bytes[:])
+    decode_operand_address(&instruction, instruction_bytes[:])
+    build_mnemonic(&instruction)
+    
+    return instruction
+}
+
+@(test)
+decode_all_modes :: proc(t: ^testing.T) {
+    mode: Mode
+    
+    mode = decode_mode(0b00)
+    testing.expect(t, mode == .NO_DISPLACEMENT, "0b00 should equals to NO_DISPLACEMENT")
+    
+    mode = decode_mode(0b01)
+    testing.expect(t, mode == .DISPLACEMENT_8BIT, "0b01 should equals to DISPLACEMENT_8BIT")
+    
+    mode = decode_mode(0b10)
+    testing.expect(t, mode == .DISPLACEMENT_16BIT, "0b10 should equals to DISPLACEMENT_16BIT")
+    
+    mode = decode_mode(0b11)
+    testing.expect(t, mode == .REGISTER_MODE, "0b11 should equals to REGISTER_MODE")
+}
+
+@(test)
+decode_registers :; proc(t: ^testing.T) {
+    register: Register
+    
+    
+}
+
+// Test decoding OPCODES
+// Test deceoding rgister
+// Test decoding an instruction and printing it
+// Test deocindg register/memory
