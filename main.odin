@@ -13,7 +13,7 @@ main :: proc() {
     app := open_file(os.args[1])
     
     // Unit testing
-    // Cleanup
+    // Better naming, and consolidate what we can
     when ODIN_DEBUG {
         start := time.now()
         
@@ -38,14 +38,8 @@ main :: proc() {
         instruction := decode_instruction(app.opcodes[lower_bound:upper_bound])
         app.instruction_pointer += cast(u16) instruction.size
         
-        fmt.println(instruction.mnemonic)
+        when !ODIN_DEBUG {
+            fmt.println(instruction.mnemonic)
+        }
     }
-}
-
-decode_instruction :: proc(instruction_bytes: []u8) -> Instruction {
-    instruction := decode_opcode(instruction_bytes[:])
-    decode_operand_address(&instruction, instruction_bytes[:])
-    build_mnemonic(&instruction)
-    
-    return instruction
 }
