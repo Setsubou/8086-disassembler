@@ -31,7 +31,7 @@ main :: proc() {
         upper_bound: u16
         
         if app.instruction_pointer + 6 > app.len {
-            upper_bound = app.len
+            upper_bound = app.len // Clamp it to the max value to prevent overflow.
         } else {
             upper_bound = app.instruction_pointer + 6
         }
