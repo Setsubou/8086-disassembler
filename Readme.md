@@ -16,12 +16,6 @@ Then run the program by passing the name of your assembly file
 ./8086.exe asm/listing_38
 ```
 
-## Time benchmark
-Alternatively you can build with -debug flag enabled to calculate the time it took for your computer to decode an instruction
-```
-odin build . -debug
-```
-
 This will produce this following output
 > Managed to decode 35317.586 instructions /second
 
