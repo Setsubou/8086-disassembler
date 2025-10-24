@@ -1,27 +1,32 @@
-package main
+package app
 
-import "core:fmt"
+import "core:log"
 import "core:os"
 
-app :: struct {
+App :: struct {
     instruction_pointer: u16,
     opcodes: []u8,
     len: u16,
 }
 
-open_file :: proc(file_path: string) -> app {
+open_file :: proc(file_path: string) -> (App, bool) {
     f, err := os.open(file_path)
-    if err != os.ERROR_NONE {
-        fmt.println("Error opening file, make sure file path is correct")
-        os.exit(1)
+    defer {
+        os.close(f)
+        free_all()
     }
-    defer os.close(f)
+    
+    if err != os.ERROR_NONE {
+        return App{}, false
+    }
     
     data, _ := os.read_entire_file_from_handle(f)
     
-    return app {
+    app := App {
         instruction_pointer = 0,
         opcodes = data,
         len = cast(u16) len(data)
     }
+    
+    return app, true
 }
