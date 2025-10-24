@@ -18,7 +18,7 @@ main :: proc() {
         os.exit(-1)
     }
     
-    app := open_file(os.args[1])
+    start := time.now() 
     
     app, open_success := app.open_file(os.args[1])
     if !open_success {
@@ -48,4 +48,9 @@ main :: proc() {
             log.info(instruction.mnemonic)
         }
     }
+    
+    end := time.now()
+    duration := time.duration_seconds(time.diff(start, end))
+        
+    log.infof("Managed to decode %f instructions /second", cast(f64) app.len / duration)
 }
