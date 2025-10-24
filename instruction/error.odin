@@ -1,4 +1,4 @@
-package opcode
+package instruction
 
 ERROR_NONE :: Error{}
 
