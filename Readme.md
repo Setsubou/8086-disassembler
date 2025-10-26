@@ -5,15 +5,15 @@ This is made for educational purposes, and probably should not be used for an ac
 Made with [Odin](https://odin-lang.org/)
 
 # Building
-Just run this following command with Odin installed
+Just run this following batch script with Odin installed
 
-``` odin
-odin build .
+``` batch
+./build.bat
 ```
 
 Then run the program by passing the name of your assembly file
 ```
-./8086.exe asm/listing_38
+./8086.exe asm/bin/listing_38
 ```
 
 This will produce this following output
