@@ -3,8 +3,9 @@ package main
 import "core:log"
 import "core:time"
 import "core:os"
-import "instruction"
-import "app"
+import "Opcode"
+import "Common"
+import "App"
 
 main :: proc() {
     Logger_Options :: log.Options {
@@ -18,7 +19,7 @@ main :: proc() {
         os.exit(-1)
     }
     
-    app, open_success := app.open_file(os.args[1])
+    app, open_success := App.open_file(os.args[1])
     if !open_success {
         log.error("Error opening file, make sure file path is correct")
         os.exit(-1)
@@ -35,8 +36,8 @@ main :: proc() {
             upper_bound = app.instruction_pointer + 6
         }
         
-        result, decode_error := instruction.decode_instruction(app.opcodes[lower_bound:upper_bound])
-        if decode_error != instruction.ERROR_NONE {
+        result, decode_error := Opcode.decode_instruction(app.opcodes[lower_bound:upper_bound])
+        if decode_error != Common.ERROR_NONE {
             log.error(decode_error)
             os.exit(-1)
         }
