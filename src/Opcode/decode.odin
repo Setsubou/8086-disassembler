@@ -18,21 +18,19 @@ decode_instruction :: proc(instruction_bytes: []u8) -> (instruction: Common.Inst
 		switch masked_input { 
 		// This will get messy real quick when there's a ton of instructions.
 		// Maybe move it to a separate hashmap?
-		    case 0b10001000: {
+		    case 0b10001000:
 				instruction, result := mov_rm_tf_r.run(instruction_bytes)
 				if result != Common.ERROR_NONE {
 				    return Common.Instruction{}, result
 				}
 				return instruction,Common. ERROR_NONE
-			}
 			
-			case 0b10110000: {
+			case 0b10110000:
 			    instruction, result := mov_imm_t_r.run(instruction_bytes)
 			    if result != Common.ERROR_NONE {
 					return Common.Instruction{}, result
 				}
 				return instruction, Common.ERROR_NONE
-			}
 		}
 	}
 

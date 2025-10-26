@@ -12,27 +12,22 @@ decode_memory :: proc(instruction_bytes: []u8, rm_bits: u8, displacement_mode: C
     
     // Fetch optional displacement if needed
     switch displacement_mode {
-        case .NO_DISPLACEMENT: {
+        case .NO_DISPLACEMENT:
             return base_register, 0, Common.ERROR_NONE
-        }
         
-        case .DISPLACEMENT_8BIT: {
+        case .DISPLACEMENT_8BIT: 
             displacement := cast(u16) instruction_bytes[2]
             return base_register, displacement, Common.ERROR_NONE
-        }
         
-        case .DISPLACEMENT_16BIT: {
+        case .DISPLACEMENT_16BIT: 
             displacement := cast(u16) instruction_bytes[3] << 8 | cast(u16)(instruction_bytes[2])
             return base_register, displacement, Common.ERROR_NONE
-        }
-        
-        case .REGISTER_MODE: {
+    
+        case .REGISTER_MODE:
             return nil, 0, Common.DECODE_ERROR{message="Register mode shouldn't even touch memory displacement, wtf?"}
-        }
         
-        case: {
+        case:
             return nil, 0, Common.DECODE_ERROR{message=fmt.tprintf("Unknown Displacement Mode %v, RM Field %b", displacement_mode, rm_bits)}
-        }
     }    
 }
 
