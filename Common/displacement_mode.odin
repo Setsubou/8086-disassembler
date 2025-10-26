@@ -1,0 +1,8 @@
+package Common
+
+Displacement_Mode :: enum {
+	NO_DISPLACEMENT,
+	REGISTER_MODE,
+	DISPLACEMENT_8BIT,
+	DISPLACEMENT_16BIT,
+}

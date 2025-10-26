@@ -1,0 +1,1 @@
+Place to store structs and enums that are shared and used by multiple packages. Had to do this to avoid a cyclic dependencies.
